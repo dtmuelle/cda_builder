@@ -8,11 +8,13 @@ be bugs.
 /////////////////////////// Running the code //////////////////////////
 
 1) import file_manager.py. 
-2) instantiate the class. e.g. fm = FileManager ()
+2) instantiate the class.
 3) setup the directory structure with 
-	fm.create_clinic_dir ('clinic_name', '.')
+	 create_clinic_dir ('clinic_name', '.')
    Use '.' to create the clinic directory in the current directory.
 4) now you can call any of the other FileManager functions
+
+-see test programs for example usage
 
 
 

@@ -57,15 +57,15 @@ be bugs.
 ///////////////////  Notes on the Current Design //////////////////////
 
 -create_clinic_dir sets up the following directory struture:
-    /root_directory/clinic_name/clinic_config
-                               /patients/
-                                         images/
-                                         pickles/
-                                         xmls/
-                                         fingerprints/
+    /<root_directory>/<clinic_name>/clinic_config.pkl
+                                   /patients/
+                                             images/
+                                             pickles/
+                                             xmls/
+                                             fingerprints/
 
 -files are saved with the following filename format:
-    patientName_UUID_counter.fileExtension 
+    <patientName>_<UUID>_<counter>.<fileExtension>
     -counter is a number (0 to some large number) used to prevent filename 
      conflicts
     -if the file is the profile image, the counter field is 'p'

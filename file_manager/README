@@ -1,0 +1,68 @@
+
+
+
+This is a first draft of the FileManager class. It's very unfinished 
+and not well tested.
+
+
+Files:
+
+-README
+
+-file_manager.py - the FileManager class
+
+-test1.py - run this to build a clinic directory called 'my_clinic'.
+    A single patient's files are saved and then retrieved. A file with an 
+    invalid file extension is saved and a resulting error message is 
+    printed. 
+
+-test2.py - builds 2 clinic directories 'my_clinic1' and 'my_clinic2' 
+    each containing different files. All the files in 'my_clinic1' are
+    transferred to 'my_clinic2' and the user is asked whether or not
+    files should be overwritten.
+
+-tmp.pkl, tmp.img, tmp2.img tmp.xml, tmp.docx - these are used by test1.py
+    and test2.py
+
+
+Notes on the Current Design:
+
+-create_clinic_dir sets up the following directory struture:
+    /root_directory/clinic_name/clinic_config
+                               /patients/
+                                         images/
+                                         pickles/
+                                         xmls/
+                                         fingerprints/
+
+-files are saved with the following filename format:
+    patientName_UUID_counter.fileExtension 
+    -counter is a number (0 to some large number) used to prevent filename 
+     conflicts
+    -if the file is the profile image, the counter field is 'p'
+
+-create_clinic_dir (clinic_name, root_dir) sets up the clinic directory
+ structure rooted at root_dir
+    -This function must be called before any of the others
+    -The path to the clinic directory is stored in a 'private' variable
+     which all other instance methods use to access the directory
+
+-save_patient_files (patient_name, UUID, *files)
+    -Currently I'm not preventing duplicate files from being saved.
+     All files with the same extension have the same name with a 
+     numerical suffix to prevent conflicts.
+    -Only '.pkl', '.img', '.fingerprint', and '.xml' files can be saved.
+     '.fingerprint' is a placeholder.
+    
+-transfer_patient_files is probably not working as intended. The current 
+    file naming scheme is to save all files with the same file exetension 
+    under the same name with a counter. The problem occurs when an image
+    file is saved for a particular patient in one clinic directory, and 
+    then image files for that same patient are transferred from another 
+    clinic directory. The first image file will be overwritten by another,
+    perhaps unrelated, image file. 
+
+
+
+
+

@@ -1,6 +1,11 @@
 
 import file_manager
+import datetime
+import patient
 
+p1 = patient.patient ('p1', 'tmp.img', 'tmp desc', 'tmp')
+p1.date = datetime.datetime.now ()
+p1.UUID = '001'
 
 # setup a clinic and save files to it
 fm1 = file_manager.FileManager ()
@@ -9,12 +14,12 @@ fm1.create_clinic_dir ('my_clinic', '.')
 
 fm1.get_clinic_dir ()
 
-fm1.save_patient_files ('p1', '001', 'tmp.pkl', 'tmp.docx', 'tmp2.img')
+fm1.save_patient_files (p1, 'tmp.pkl', 'tmp.docx', 'tmp2.img')
 
-fm1.save_patient_files ('p1', '001', 'tmp.pkl', profile_image='tmp.img')
+fm1.save_patient_files (p1, 'tmp.pkl', profile_image='tmp.img')
 
 
-fm1.save_patient_files ('p1', '001', 'tmp.xml')
+fm1.save_patient_files (p1, 'tmp.xml')
 
 files = fm1.get_patient_files ('001')
 
@@ -28,11 +33,11 @@ fm2.create_clinic_dir ('my_clinic2', '.')
 
 fm2.get_clinic_dir ()
 
-fm2.save_patient_files ('p1', '001', 'tmp.pkl', 'tmp.xml')
+fm2.save_patient_files (p1, 'tmp.pkl', 'tmp.xml')
 
-fm2.save_patient_files ('p1', '001', 'tmp.pkl', profile_image='tmp2.img')
+fm2.save_patient_files (p1, 'tmp.pkl', profile_image='tmp2.img')
 
-fm2.save_patient_files ('p1', '001', 'tmp.xml')
+fm2.save_patient_files (p1, 'tmp.xml')
 
 files = fm2.get_patient_files ('001')
 

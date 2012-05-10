@@ -80,8 +80,6 @@ class FileManager:
         return True
 
 
-    # Note: will probably change this to add a time stamp 
-    #       (YearMonthDay_HoursMinutesSeconds) to the filenames
     # save_patient_files -
     #     Save a patient file(s) to the directory with the appropriate 
     #     name (could be pkl, img, xml, or fingerprint file). Files 
@@ -90,8 +88,8 @@ class FileManager:
     #     which are already in the clinic directory, a duplicate will be
     #     saved under a different name.
     # Arguments:
-    #     patient_name - a string containing the patient's name
-    #     UUID - a string containing a UUID
+    #     patient_object - a patient object containing the fields "UUID",
+    #         "name", and "date"
     #     files - 1 or more strings containing the names of files to be
     #         saved
     #     special_files - If a keyword argument 'profile_image=file_name'
@@ -101,14 +99,28 @@ class FileManager:
     # Returns: 
     #     - An array containing the paths of the files that were 
     #       successfully saved.
-    #     - False if create_clinic_dir () has not yet been called.
-    def save_patient_files (self, patient_name, UUID, *files, 
-                            **special_files):
+    #     - False if create_clinic_dir () has not yet been called
+    #     - False if patient_object is invalid or if its UUID, name, or
+    #       date fields have not been initialized.
+    def save_patient_files (self, patient_object, *files, **special_files):
 
         if self._clinic_path == '':
             self._file_mgr_error ('save_patient_files',
                                   'clinic directory not yet created')
             return False
+
+
+        # add error check, patient_object must be valid, fields filled
+        UUID = patient_object.UUID # check for actual field names
+        patient_name = patient_object.name
+        time_stamp = patient_object.date
+        time_stamp = (str (time_stamp[0]) + '-' + 
+                      str (time_stamp[1]) + '-' + 
+                      str (time_stamp[2]) + '-' + 
+                      str (time_stamp[3]) + '-' + 
+                      str (time_stamp[4]) + '-' + 
+                      str (time_stamp[5]) + '-' +
+                      str (time_stamp[7]))
 
         new_filename = ''
         counter = 0
@@ -129,7 +141,8 @@ class FileManager:
             else:
                 new_filename = (self._clinic_path + '/patients' +
                                 self._file_ext_dict ['.img'] + 
-                                patient_name + '_' + UUID + '_' + 'p.img')
+                                patient_name + '_' + UUID + '_' + 
+                                time_stamp + '_p.img')
                 shutil.copyfile (special_files['profile_image'], 
                                  new_filename)
                 filenames.append (new_filename)
@@ -154,7 +167,8 @@ class FileManager:
 
             new_filename = (self._clinic_path + '/patients' +
                             self._file_ext_dict [file_ext] + patient_name +
-                            '_' + UUID + '_' + str (counter) + file_ext)
+                            '_' + UUID + '_' + time_stamp + '_' +
+                            str (counter) + file_ext)
                 
             # If the filename already exists, suffix the filename with
             # the first available integer.

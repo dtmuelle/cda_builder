@@ -3,6 +3,7 @@ import os
 import shutil
 import sys
 import re
+import datetime
 
 
 FM_DEBUG = False
@@ -113,14 +114,7 @@ class FileManager:
         # add error check, patient_object must be valid, fields filled
         UUID = patient_object.UUID # check for actual field names
         patient_name = patient_object.name
-        time_stamp = patient_object.date
-        time_stamp = (str (time_stamp[0]) + '-' + 
-                      str (time_stamp[1]) + '-' + 
-                      str (time_stamp[2]) + '-' + 
-                      str (time_stamp[3]) + '-' + 
-                      str (time_stamp[4]) + '-' + 
-                      str (time_stamp[5]) + '-' +
-                      str (time_stamp[7]))
+        time_stamp = patient_object.date.strftime ('%m-%d-%Y-%H-%M-%S')
 
         new_filename = ''
         counter = 0

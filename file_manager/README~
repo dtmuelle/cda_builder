@@ -34,7 +34,7 @@ be bugs.
     transferred to 'my_clinic2' and the user is asked whether or not
     files should be overwritten.
 
--tmp.pkl, tmp.img, tmp2.img, tmp.csv, tmp.xml, tmp.docx -
+-tmp.pkl, tmp.img, tmp2.img, tmp.csv, tmp.xml, tmp.docx 
     These are used by test1.py and test2.py
 
 
@@ -72,7 +72,7 @@ be bugs.
     -The path to the clinic directory is stored in a 'private' variable
      which all other instance methods use to access the directory
 
--save_patient_files (patient_name, UUID, *files)
+-save_patient_files (patient_object, *files, **special_files)
     -Currently I'm not preventing duplicate files from being saved.
      All files with the same extension have the same name with a 
      numerical suffix to prevent conflicts.

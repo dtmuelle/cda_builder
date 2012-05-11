@@ -72,7 +72,7 @@ be bugs.
     -The path to the clinic directory is stored in a 'private' variable
      which all other instance methods use to access the directory
 
--save_patient_files (patient_name, UUID, *files)
+-save_patient_files (patient_object, *files, **special_files)
     -Currently I'm not preventing duplicate files from being saved.
      All files with the same extension have the same name with a 
      numerical suffix to prevent conflicts.

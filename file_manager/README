@@ -1,5 +1,5 @@
 
-Last Update: 5-8-12
+Last Update: 5-11-12
 
 This is a draft of the FileManager class. It is unfinished. There might 
 be bugs.
@@ -34,19 +34,12 @@ be bugs.
     transferred to 'my_clinic2' and the user is asked whether or not
     files should be overwritten.
 
--tmp.pkl, tmp.img, tmp2.img tmp.xml, tmp.docx - these are used by test1.py
-    and test2.py
+-tmp.pkl, tmp.img, tmp2.img, tmp.csv, tmp.xml, tmp.docx 
+    These are used by test1.py and test2.py
 
 
 
 ///////////////////////// Planned Changes /////////////////////////////
-
--I'll be adding a clinics directory so that multiple clinic directories
- can be saved. This will be implemented in create_clinic_dir ()
-
--A time stamp, taken from the patient pickle on the thumbdrive, will
- become part of the filename format. This will be implemented in
- save_patient_files ()
 
 -transfer_clinic_files () might undergo drastic changes since it's 
  is unclear to me exactly under what conditions directories will get 
@@ -60,12 +53,15 @@ be bugs.
     /<root_directory>/<clinic_name>/clinic_config.pkl
                                    /patients/
                                              images/
+                                             CSV/
                                              pickles/
                                              xmls/
                                              fingerprints/
 
 -files are saved with the following filename format:
-    <patientName>_<UUID>_<counter>.<fileExtension>
+
+  <patientFamilyName>_<patientGivenName>_<UUID>_<counter>.<fileExtension>
+
     -counter is a number (0 to some large number) used to prevent filename 
      conflicts
     -if the file is the profile image, the counter field is 'p'
@@ -80,8 +76,8 @@ be bugs.
     -Currently I'm not preventing duplicate files from being saved.
      All files with the same extension have the same name with a 
      numerical suffix to prevent conflicts.
-    -Only '.pkl', '.img', '.fingerprint', and '.xml' files can be saved.
-     '.fingerprint' is a placeholder.
+    -Only '.pkl', '.img', '.fingerprint', '.csv', and '.xml' files can be 
+     saved. '.fingerprint' is a placeholder.
     
 -transfer_patient_files is probably not working as intended. The current 
     file naming scheme is to save all files with the same file exetension 

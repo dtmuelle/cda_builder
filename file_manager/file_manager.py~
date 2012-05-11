@@ -49,7 +49,9 @@ class FileManager:
     #     Creates the directory structure for a clinic instance
     #     with the clinic directory and the patient data directories
     #     below it. This will be invoked one time on every workstation 
-    #     that makes up a clinic.
+    #     that makes up a clinic. A clinic directory must be setup with
+    #     this function before any of the other public method attributes
+    #     can be called.
     # Arguments:
     #     clinic_name - A string containing the name of the clinic.
     #     root_dir - A string containing the name of the directory in which
@@ -85,11 +87,11 @@ class FileManager:
 
     # save_patient_files -
     #     Save a patient file(s) to the directory with the appropriate 
-    #     name (could be pkl, img, xml, or fingerprint file). Files 
-    #     with extentions other than .pkl, .img, .xml, or .fingerprint 
-    #     will not be saved. If save_patient_files is called for files 
-    #     which are already in the clinic directory, a duplicate will be
-    #     saved under a different name.
+    #     name (could be pkl, img, xml, csv, or fingerprint file). Files 
+    #     with extentions other than .pkl, .img, .xml, .csv, or 
+    #     .fingerprint will not be saved. If save_patient_files is called 
+    #     for files which are already in the clinic directory, a duplicate 
+    #     will be saved under a different name.
     # Arguments:
     #     patient_object - a patient object containing the fields "UUID",
     #         "name", and "date"
@@ -126,8 +128,8 @@ class FileManager:
             return False
 
         UUID = patient_object.id 
-        patient_name = (patient_object.given_name + '_' +
-                        patient_object.family_name)
+        patient_name = (patient_object.family_name + '_' +
+                        patient_object.given_name)
         time_stamp = patient_object.date.strftime ('%m-%d-%Y-%H-%M-%S')
 
         if not UUID and patient_name != '_' and time_stamp:

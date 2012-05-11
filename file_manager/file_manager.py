@@ -20,6 +20,7 @@ class FileManager:
         # valid file extensions and their directory names
         self._file_ext_dict = {'.img':'/images/', '.pkl':'/pickles/', 
                                '.fingerprint':'/fingerprints/',
+                               '.csv':'/CSV/',
                                '.xml':'/xmls/'}
         
 
@@ -102,8 +103,8 @@ class FileManager:
     #     - An array containing the paths of the files that were 
     #       successfully saved.
     #     - False if create_clinic_dir () has not yet been called
-    #     - False if patient_object is invalid or if its UUID, name, or
-    #       date fields have not been initialized.
+    #     - False if patient_object is invalid or if its id, given_name,
+    #       family_name, or date fields have not been initialized.
     def save_patient_files (self, patient_object, *files, **special_files):
 
         if self._clinic_path == '':
@@ -116,18 +117,23 @@ class FileManager:
                                   'patient_object is not valid')
             return False
 
-        if (not 'UUID' and 'patient_name' and 'date' 
+        if (not 'id' and 'given_name' and 'family_name' and 'date' 
             in patient_object.__dict__.keys ()):
             self._file_mgr_error ('save_patient_files',
                                   'patient_object does not contain the',
-                                  'fields "UUID", "patient_name", or',
+                                  'fields "id", "given_name", or',
                                   '"date"')
             return False
 
-
-        UUID = patient_object.UUID 
-        patient_name = patient_object.name
+        UUID = patient_object.id 
+        patient_name = (patient_object.given_name + '_' +
+                        patient_object.family_name)
         time_stamp = patient_object.date.strftime ('%m-%d-%Y-%H-%M-%S')
+
+        if not UUID and patient_name != '_' and time_stamp:
+            self._file_mgr_error ('save_patient_files',
+                               'patient_object fields not all initialized')
+            return False
 
         new_filename = ''
         counter = 0
@@ -242,7 +248,7 @@ class FileManager:
     #     - False if create_clinic_dir () has not yet been called or if
     #       the target directory does not exist.
     #     - True for success
-    def transfer_clinic_files (self, target_directory, interactive=False):
+    def transfer_clinic_files (self, target_directory, interactive=True):
 
         if self._clinic_path == '':
             self._file_mgr_error ('transfer_clinic_files',

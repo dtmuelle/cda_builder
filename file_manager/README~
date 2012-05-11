@@ -60,7 +60,7 @@ be bugs.
 
 -files are saved with the following filename format:
 
-  <patientFamilyName>_<patientGivenName>_<UUID>_<counter>.<fileExtension>
+  <familyName>_<fivenName>_<UUID>_<time_stamp>_<counter>.<fileExtension>
 
     -counter is a number (0 to some large number) used to prevent filename 
      conflicts

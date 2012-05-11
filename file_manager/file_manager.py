@@ -4,6 +4,7 @@ import shutil
 import sys
 import re
 import datetime
+import patient
 
 
 FM_DEBUG = False
@@ -110,9 +111,21 @@ class FileManager:
                                   'clinic directory not yet created')
             return False
 
+        if not isinstance (patient_object, patient.patient):
+            self._file_mgr_error ('save_patient_files',
+                                  'patient_object is not valid')
+            return False
 
-        # add error check, patient_object must be valid, fields filled
-        UUID = patient_object.UUID # check for actual field names
+        if (not 'UUID' and 'patient_name' and 'date' 
+            in patient_object.__dict__.keys ()):
+            self._file_mgr_error ('save_patient_files',
+                                  'patient_object does not contain the',
+                                  'fields "UUID", "patient_name", or',
+                                  '"date"')
+            return False
+
+
+        UUID = patient_object.UUID 
         patient_name = patient_object.name
         time_stamp = patient_object.date.strftime ('%m-%d-%Y-%H-%M-%S')
 
@@ -121,6 +134,7 @@ class FileManager:
         file_ext = ''
         filenames = []
 
+        # save profile image if specified
         if 'profile_image' in special_files.keys ():
             if not os.path.isfile (special_files['profile_image']):
                 self._file_mgr_error ('save_patient_files', 
@@ -141,7 +155,7 @@ class FileManager:
                                  new_filename)
                 filenames.append (new_filename)
 
-
+        # save the rest of the files
         for old_filename in files:
 
             if not os.path.isfile (old_filename):

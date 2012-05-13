@@ -233,6 +233,8 @@ class FileManager:
 
         return patient_files
 
+    # to get files by type and by day, pass the keyword arguments
+    # e.g.  get_patient_files2 (self, day='15', file_type='.pkl'
     def get_patient_files2 (self, **file_info):
 
         day = ''
@@ -252,10 +254,11 @@ class FileManager:
             for filename in os.listdir (self._clinic_path + '/patients'
                                         + directory):
                 if file_type in filename:
-                    match =  re.search (r'^[^-]+(..)', filename).group ()
-                    print "match = ", match
-                    if (re.search (r'^[^_]+?_[^_]+?_[^_]+?_[^-]+?-(..)', 
-                        filename).group () == day):
+                    #match = (
+                    #    re.search (r'(^[^-]+-)(..)', filename).group (2))
+                    #print "match = ", match
+                    if (re.search (r'(^[^-]+-)(..)', filename).group (2) ==
+                        day):
                         files.append (filename)
 
         return files

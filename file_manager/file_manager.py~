@@ -49,7 +49,7 @@ class FileManager:
     #     Creates the directory structure for a clinic instance
     #     with the clinic directory and the patient data directories
     #     below it. This will be invoked one time on every workstation 
-    #     that makes up a clinic. A clinic directory must be setup with
+    #     that makes up a clinic. A clinic directory must be set up with
     #     this function before any of the other public method attributes
     #     can be called.
     # Arguments:
@@ -232,6 +232,33 @@ class FileManager:
                                           directory + filename)
 
         return patient_files
+
+    def get_patient_files2 (self, **file_info):
+
+        day = ''
+        file_type = ''
+
+        if 'day' in file_info.keys ():
+            day = file_info['day']
+
+        #if 'UUID' in file_info.keys ():
+
+        if 'file_type' in file_info.keys ():
+            file_type = file_info['file_type']
+
+        files = []
+
+        for directory in self._file_ext_dict.values ():
+            for filename in os.listdir (self._clinic_path + '/patients'
+                                        + directory):
+                if file_type in filename:
+                    match =  re.search (r'^[^-]+(..)', filename).group ()
+                    print "match = ", match
+                    if (re.search (r'^[^_]+?_[^_]+?_[^_]+?_[^-]+?-(..)', 
+                        filename).group () == day):
+                        files.append (filename)
+
+        return files
 
 
 

@@ -233,6 +233,33 @@ class FileManager:
 
         return patient_files
 
+#    def get_patient_files2 (self, **file_info):
+#
+#        day = ''
+#        file_type = ''
+#
+#        if 'day' in file_info.keys ():
+#            day = file_info['day']
+#
+#        #if 'UUID' in file_info.keys ():
+#
+#        if 'file_type' in file_info.keys ():
+#            file_type = file_info['file_type']
+#
+#        files = []
+#
+#        for directory in self._file_ext_dict.values ():
+#            for filename in os.listdir (self._clinic_path + '/patients'
+#                                        + directory):
+#                if file_type in filename:
+#                    match =  re.search (r'^[^-]+(..)', filename).group ()
+#                    print "match = ", match
+#                    if (re.search (r'^[^_]+?_[^_]+?_[^_]+?_[^-]+?-(..)', 
+#                        filename).group () == day):
+#                        files.append (filename)
+#
+#        return files
+
 
 
     # transfer_clinic_files -

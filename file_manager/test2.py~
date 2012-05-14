@@ -49,7 +49,7 @@ fm2.save_patient_files (p1, 'tmp.xml')
 
 files = fm2.get_patient_files (p1.id)
 
-print 'files in my_clinic2 for patient ' p1.id ' = ' + ' '.join (files)
+print 'files in my_clinic2 for patient ' + p1.id  + ' = ' + ' '.join (files)
 
 
 # transfer file from the first clinic to the second clinic, asking the

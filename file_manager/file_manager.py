@@ -4,7 +4,10 @@ import shutil
 import sys
 import re
 import datetime
+import filecmp
+
 import patient
+
 
 
 FM_DEBUG = False
@@ -65,7 +68,7 @@ class FileManager:
                                   'create_clinic_dir () already called')
             return False
 
-        clinic_dir = root_dir + '/' + clinic_name
+        clinic_dir = os.path.abspath (root_dir) + '/' + clinic_name
 
         if (FM_DEBUG): print "clinic_dir = ", clinic_dir
 
@@ -269,13 +272,17 @@ class FileManager:
     #     Copies files from this clinic's directory to the target directory.
     #     This clinic's subdirectories are copied recursively. This would 
     #     be invoked if the exit station needed to be moved from one 
-    #     workstation to another.
+    #     workstation to another. Files in the source directory with the
+    #     same name and the same contents as files in the destination
+    #     directory will not be transferred. 
     # Arguments:
     #     target_directory - a string containing the name of the directory 
     #         to which all files should be transferred
     #     interactive - if this is set to True, the used is asked whether
-    #         or not files in the target directory should be overwritten.
-    #         This is set to False by default.
+    #         or not files in the target directory that have the same
+    #         name as files in the source directory but with different
+    #         contents should be overwritten.
+    #         This is set to True by default.
     # Returns:
     #     - False if create_clinic_dir () has not yet been called or if
     #       the target directory does not exist.
@@ -309,18 +316,26 @@ class FileManager:
 
             for filename in filenames:
 
-                if (interactive == False or
-                    not os.path.isfile (target_dirpath + '/' + filename)):
-                    shutil.copyfile (dirpath + '/' + filename,
-                                     target_dirpath + '/' + filename)
+                if os.path.isfile (target_dirpath + '/' + filename):
+                    if filecmp.cmp (target_dirpath + '/' + filename,
+                                    dirpath + '/' + filename):
+                        continue
+                    elif interactive == True:
+                        self._file_mgr_error ('transfer_clinic_files',
+                            'Warning: ' + filename + ' has the same name '
+                            'as a file in the target directory and ' +
+                            'has different contents. The files contents ' +
+                            'may be entirely unrelated')
+                        user_input = raw_input (('Overwrite ' +
+                            dirpath + '/' + filename + '? (y/n)'))
+                        if user_input == 'y':
+                            shutil.copyfile (dirpath + '/' + filename,
+                                           target_dirpath + '/' + filename)
+                            print "File overwritten"
+                        else:
+                            print "File not overwritten"
 
-                else: # interactive == True and 
-                      # os.path.isfile (target_directory + '/' + filename))
-                    user_input = raw_input (('File ' + dirpath + '/' +
-                                             filename +
-                                             ' exists. Overwrite it?'))
-
-                    if user_input.startswith ('y'):
+                    else: # interactive == False 
                         shutil.copyfile (dirpath + '/' + filename,
                                          target_dirpath + '/' + filename)
 
@@ -336,7 +351,7 @@ class FileManager:
     def _file_mgr_error (self, func_name, error_msg):
         print >> sys.stderr, (__name__ + ': ' + func_name + ': ' + 
                               error_msg)
-               
+
             
 
 

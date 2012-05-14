@@ -26,7 +26,6 @@ fm1.save_patient_files (p1, 'tmp.pkl', 'tmp.docx', 'tmp2.img')
 
 fm1.save_patient_files (p1, 'tmp.pkl', profile_image='tmp.img')
 
-
 fm1.save_patient_files (p1, 'tmp.xml')
 
 files = fm1.get_patient_files (p1.id)

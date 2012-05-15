@@ -10,7 +10,7 @@ import patient
 
 
 
-FM_DEBUG = True
+FM_DEBUG = False
 
 
 # FileManager -
@@ -398,7 +398,7 @@ class FileManager:
                         'may be identical or entirely unrelated')
                     user_input = raw_input (('Overwrite ' + dirpath + 
                                              '/' + filename + '?'))
-                    if user_input == 'y':
+                    if user_input.startswith ('y'):
                         shutil.copyfile (dirpath + '/' + filename,
                                         target_dirpath + '/' + filename)
                         print "File overwritten"

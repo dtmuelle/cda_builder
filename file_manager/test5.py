@@ -16,5 +16,4 @@ fm2.create_clinic_dir ('my_clinic2', '.')
 fm.save_patient_files (p1, 'tmp.pkl')
 
 fm.transfer_clinic_files (fm2.get_clinic_dir ())
-fm.transfer_clinic_files (fm2.get_clinic_dir ())
 

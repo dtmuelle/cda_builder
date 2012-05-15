@@ -245,7 +245,7 @@ class FileManager:
             return False
 
         os.symlink (self._clinic_path + '/patients/images', 
-                    static_images_dir)
+                    static_images_dir + '/images_sym')
 
         return True
 
@@ -324,7 +324,7 @@ class FileManager:
         for directory in self._file_ext_dict.values ():
             for filename in os.listdir (self._clinic_path + '/patients'
                                         + directory):
-                if file_type != '' and  not file_type in filename:
+                if file_type != '' and not file_type in filename:
                     meets_criteria = False
                 if (day != '' and 
                     re.search (r'^[^-]+-(..)|()', filename).group (1) !=

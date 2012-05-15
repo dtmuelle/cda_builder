@@ -396,8 +396,9 @@ class FileManager:
                         filename + ' has the same name as a file in ' +
                         'the target directory. The files contents ' +
                         'may be identical or entirely unrelated')
-                    user_input = raw_input (('Overwrite ' + dirpath + 
-                                             '/' + filename + '?'))
+                    user_input = raw_input (('Overwrite ' + 
+                                             target_dirpath + '/' + 
+                                             filename + '?'))
                     if user_input.startswith ('y'):
                         shutil.copyfile (dirpath + '/' + filename,
                                         target_dirpath + '/' + filename)

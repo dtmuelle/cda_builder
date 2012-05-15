@@ -23,8 +23,7 @@ class FileManager:
         # valid file extensions and their directory names
         self._file_ext_dict = {'.img':'/images/', '.pkl':'/pickles/', 
                                '.fingerprint':'/fingerprints/',
-                               '.csv':'/CSV/',
-                               '.xml':'/xmls/'}
+                               '.csv':'/CSV/', '.xml':'/xmls/'}
         
 
     ################# Public Method Attributes #######################
@@ -57,8 +56,8 @@ class FileManager:
     #     can be called.
     # Arguments:
     #     clinic_name - A string containing the name of the clinic.
-    #     root_dir - A string containing the name of the directory in which
-    #         the new clinic directory will be saved.
+    #     root_dir - A string containing the name of the directory in 
+    #         which the new clinic directory will be saved.
     # Returns: 
     #     - True for success, False for failure
     def create_clinic_dir (self, clinic_name, root_dir):
@@ -92,9 +91,9 @@ class FileManager:
     #     Save a patient file(s) to the directory with the appropriate 
     #     name (could be pkl, img, xml, csv, or fingerprint file). Files 
     #     with extentions other than .pkl, .img, .xml, .csv, or 
-    #     .fingerprint will not be saved. If save_patient_files is called 
-    #     for files which are already in the clinic directory, a duplicate 
-    #     will be saved under a different name.
+    #     .fingerprint will not be saved. If save_patient_files is 
+    #     called for files which are already in the clinic directory, a 
+    #     duplicate will be saved under a different name.
     # Arguments:
     #     patient_object - a patient object containing the fields "UUID",
     #         "name", and "date"
@@ -152,7 +151,7 @@ class FileManager:
                   special_files['profile_image'] + ': file does not exist')
 
             elif (re.search (r'(\.[^.]*$)|($)', 
-                             special_files['profile_image']).group () != 
+                             special_files['profile_image']).group (1) != 
                   '.img'):
                 self._file_mgr_error ('save_patient_files', 
                                       special_files['profile_image'] + 
@@ -174,7 +173,8 @@ class FileManager:
                                     old_filename + ': file does not exist')
                 continue
                 
-            file_ext = re.search (r'(\.[^.]*$)|($)', old_filename).group () 
+            file_ext = ( 
+                re.search (r'(\.[^.]*$)|($)', old_filename).group (1))
 
             if (FM_DEBUG): print "file_ext = ", file_ext
 
@@ -206,8 +206,6 @@ class FileManager:
 
         
 
-    # Note: changed parameters to just UUID, assuming that it's unique 
-    # to each patient.
     # get_patient_files -
     #     Retrieves all patient files that are connected to the 
     #     specified UUID. 
@@ -236,33 +234,55 @@ class FileManager:
 
         return patient_files
 
-    # to get files by type and by day, pass the keyword arguments
-    # e.g. "get_patient_files2 (self, day='15', file_type='.pkl'"
+
+
+    # get_patient_files2 -
+    #     Retrieves all files of a certain type or from a certain visit.
+    # Arguments:
+    #     file_info - Accepts a list of keyword arguments. If the 
+    #         keyword argument "day='<a_day>'" is given, this function
+    #         will search for all files corresponding to visits during
+    #         the given day.
+    #         If the keyword argument "file_type='<file_type>' is
+    #         given, where <file_type> is one of '.pkl', '.xml', 
+    #         '.csv', '.fingerprint', or '.img', this function will
+    #         search for all files with the given file extension.
+    #         If multiple keyword arguments are given, this function
+    #         will return the files which satisfy all of the
+    #         specifications.
+    # Returns:
+    #     - A list of files which satisfy the specifications given
+    #        in file_info
+    #     - False if create_clinic_dir () has not yet been called
     def get_patient_files2 (self, **file_info):
+
+        if self._clinic_path == '':
+            self._file_mgr_error ('get_patient_files2',
+                                  'clinic directory not yet created')
+            return False
 
         day = ''
         file_type = ''
+        meets_criteria = True
+        files = []
 
         if 'day' in file_info.keys ():
             day = file_info['day']
 
-        #if 'UUID' in file_info.keys ():
-
         if 'file_type' in file_info.keys ():
             file_type = file_info['file_type']
-
-        files = []
 
         for directory in self._file_ext_dict.values ():
             for filename in os.listdir (self._clinic_path + '/patients'
                                         + directory):
-                if file_type in filename:
-                    #match = (
-                    #    re.search (r'(^[^-]+-)(..)', filename).group (2))
-                    #print "match = ", match
-                    if (re.search (r'(^[^-]+-)(..)', filename).group (2) ==
-                        day):
-                        files.append (filename)
+                if file_type != '' and  not file_type in filename:
+                    meets_criteria = False
+                if (day != '' and 
+                    re.search (r'^[^-]+-(..)|()', filename).group (1) !=
+                    day):
+                    meets_criteria = False
+                if meets_criteria:
+                    files.append (filename)
 
         return files
 

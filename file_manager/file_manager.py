@@ -87,29 +87,33 @@ class FileManager:
         return True
 
 
+
     # save_patient_files -
     #     Save a patient file(s) to the directory with the appropriate 
-    #     name (could be pkl, img, xml, csv, or fingerprint file). Files 
+    #     name (could be pkl, img, xml, csv, or fingerprint file). Files
     #     with extentions other than .pkl, .img, .xml, .csv, or 
     #     .fingerprint will not be saved. If save_patient_files is 
     #     called for files which are already in the clinic directory, a 
     #     duplicate will be saved under a different name.
     # Arguments:
-    #     patient_object - a patient object containing the fields "UUID",
-    #         "name", and "date"
+    #     patient_object - a patient object containing the fields 
+    #         "UUID", "family_name", "given_name", and "date". "UUID", 
+    #         "family_name", and "given_name" are strings. "date" is of
+    #         class datetime.datetime.
     #     files - 1 or more strings containing the names of files to be
     #         saved
-    #     special_files - If a keyword argument 'profile_image=file_name'
-    #         (where file_name is a string containg a specified filename)
-    #         is given, file_name will be saved as the profile image.
-    #         If a profile image is already saved, it will be overwritten.
+    #     special_files - If a keyword argument 
+    #         'profile_image=file_name' (where file_name is a string 
+    #         containg a specified filename) is given, file_name will be
+    #         saved as the profile image. If a profile image is already 
+    #         saved, it will be overwritten.
     # Returns: 
     #     - An array containing the paths of the files that were 
     #       successfully saved.
     #     - False if create_clinic_dir () has not yet been called
-    #     - False if patient_object is invalid or if its id, given_name,
-    #       family_name, or date fields have not been initialized.
-    def save_patient_files (self, patient_object, *files, **special_files):
+    #     - False if an error occurred 
+    def save_patient_files (self, patient_object, *files, 
+                            **special_files):
 
         if self._clinic_path == '':
             self._file_mgr_error ('save_patient_files',
@@ -124,11 +128,19 @@ class FileManager:
         if (not 'id' and 'given_name' and 'family_name' and 'date' 
             in patient_object.__dict__.keys ()):
             self._file_mgr_error ('save_patient_files',
-                                  'patient_object does not contain the',
-                                  'fields "id", "given_name", ',
+                                  'patient_object does not contain ' +
+                                  'the fields "id", "given_name", ' +
                                   '"family_name", or "date"')
             return False
 
+        if not isinstance (patient_object.date, datetime.datetime):
+            self._file_mgr_error ('save_patient_files',
+                                  str (patient_object) + 
+                                  ': date attribute is not of class ' +
+                                  'datetime')
+            return False
+
+        # extract patient info
         UUID = patient_object.id 
         patient_name = (patient_object.family_name + '_' +
                         patient_object.given_name)
@@ -136,7 +148,7 @@ class FileManager:
 
         if not UUID and patient_name != '_' and time_stamp:
             self._file_mgr_error ('save_patient_files',
-                               'patient_object fields not all initialized')
+                            'patient_object fields not all initialized')
             return False
 
         new_filename = ''
@@ -148,11 +160,11 @@ class FileManager:
         if 'profile_image' in special_files.keys ():
             if not os.path.isfile (special_files['profile_image']):
                 self._file_mgr_error ('save_patient_files', 
-                  special_files['profile_image'] + ': file does not exist')
+                                      special_files['profile_image'] + 
+                                      ': file does not exist')
 
             elif (re.search (r'(\.[^.]*$)|($)', 
-                             special_files['profile_image']).group (1) != 
-                  '.img'):
+                   special_files['profile_image']).group (1) != '.img'):
                 self._file_mgr_error ('save_patient_files', 
                                       special_files['profile_image'] + 
                                       ': invalid file extension')
@@ -170,7 +182,7 @@ class FileManager:
 
             if not os.path.isfile (old_filename):
                 self._file_mgr_error ('save_patient_files', 
-                                    old_filename + ': file does not exist')
+                                 old_filename + ': file does not exist')
                 continue
                 
             file_ext = ( 
@@ -185,9 +197,9 @@ class FileManager:
                 continue
 
             new_filename = (self._clinic_path + '/patients' +
-                            self._file_ext_dict [file_ext] + patient_name +
-                            '_' + UUID + '_' + time_stamp + '_' +
-                            str (counter) + file_ext)
+                            self._file_ext_dict [file_ext] + 
+                            patient_name + '_' + UUID + '_' + 
+                            time_stamp + '_' + str (counter) + file_ext)
                 
             # If the filename already exists, suffix the filename with
             # the first available integer.
@@ -259,8 +271,9 @@ class FileManager:
             for filename in os.listdir (self._clinic_path + '/patients'
                                         + directory):
                 if UUID in filename:
-                    patient_files.append (self._clinic_path + '/patients' +
-                                          directory + filename)
+                    patient_files.append (self._clinic_path + 
+                                          '/patients' + directory + 
+                                          filename)
 
         return patient_files
 
@@ -303,6 +316,8 @@ class FileManager:
         if 'file_type' in file_info.keys ():
             file_type = file_info['file_type']
 
+        # look through all directories for files meeting the specified
+        # criteria
         for directory in self._file_ext_dict.values ():
             for filename in os.listdir (self._clinic_path + '/patients'
                                         + directory):
@@ -314,31 +329,30 @@ class FileManager:
                     meets_criteria = False
                 if meets_criteria:
                     files.append (filename)
+                meets_criteria = True
 
         return files
 
 
 
     # transfer_clinic_files -
-    #     Copies files from this clinic's directory to the target directory.
-    #     This clinic's subdirectories are copied recursively. This would 
-    #     be invoked if the exit station needed to be moved from one 
-    #     workstation to another. Files in the source directory with the
-    #     same name and the same contents as files in the destination
-    #     directory will not be transferred. 
+    #     Copies files from this clinic's directory to the target 
+    #     directory. This clinic's subdirectories are copied 
+    #     recursively. This would be invoked if the exit station needed
+    #     to be moved from one workstation to another. 
     # Arguments:
-    #     target_directory - a string containing the name of the directory 
-    #         to which all files should be transferred
-    #     interactive - if this is set to True, the used is asked whether
-    #         or not files in the target directory that have the same
-    #         name as files in the source directory but with different
-    #         contents should be overwritten.
-    #         This is set to True by default.
+    #     target_directory - a string containing the name of the 
+    #         directory to which all files should be transferred
+    #     interactive - if this is set to True, the user is asked 
+    #         whether or not files in the target directory that have the
+    #         same name as files in the source directory should be 
+    #         overwritten. This is set to True by default.
     # Returns:
     #     - False if create_clinic_dir () has not yet been called or if
     #       the target directory does not exist.
     #     - True for success
-    def transfer_clinic_files (self, target_directory, interactive=True):
+    def transfer_clinic_files (self, target_directory, 
+                               interactive=True):
 
         if self._clinic_path == '':
             self._file_mgr_error ('transfer_clinic_files',
@@ -347,7 +361,7 @@ class FileManager:
 
         if not os.path.isdir (target_directory):
             self._file_mgr_error ('transfer_clinic_files',
-                                  target_directory + ' is not a directory')
+                              target_directory + ' is not a directory')
             return False
 
         user_input = ''
@@ -357,8 +371,8 @@ class FileManager:
             
             if (FM_DEBUG): print dirpath, dirnames, filenames
 
-            target_dirpath = re.sub (self._clinic_path, target_directory,
-                                     dirpath)
+            target_dirpath = re.sub (self._clinic_path, 
+                                     target_directory, dirpath)
             if (FM_DEBUG): print 'target_dirpath = ', target_dirpath
            
             for dirname in dirnames:
@@ -368,27 +382,27 @@ class FileManager:
             for filename in filenames:
 
                 if os.path.isfile (target_dirpath + '/' + filename):
-                    if filecmp.cmp (target_dirpath + '/' + filename,
-                                    dirpath + '/' + filename):
-                        continue
-                    elif interactive == True:
+                #    if filecmp.cmp (target_dirpath + '/' + filename,
+                #                    dirpath + '/' + filename):
+                #        continue
+                     if interactive == True:
                         self._file_mgr_error ('transfer_clinic_files',
-                            'Warning: ' + filename + ' has the same name '
-                            'as a file in the target directory and ' +
-                            'has different contents. The files contents ' +
-                            'may be entirely unrelated')
+                            'Warning: ' + filename + ' has the same ' +
+                            'name as a file in the target directory. ' +
+                            'The files contents may be identical or ' +
+                            'entirely unrelated')
                         user_input = raw_input (('Overwrite ' +
-                            dirpath + '/' + filename + '? (y/n)'))
+                            dirpath + '/' + filename + '?'))
                         if user_input == 'y':
                             shutil.copyfile (dirpath + '/' + filename,
-                                           target_dirpath + '/' + filename)
+                                       target_dirpath + '/' + filename)
                             print "File overwritten"
                         else:
                             print "File not overwritten"
 
                     else: # interactive == False 
                         shutil.copyfile (dirpath + '/' + filename,
-                                         target_dirpath + '/' + filename)
+                                       target_dirpath + '/' + filename)
 
         return True
 
@@ -400,13 +414,13 @@ class FileManager:
     # prints out an error message to stderr of the form:
     # "class_name: function_name: error_message"
     def _file_mgr_error (self, func_name, error_msg):
-        print >> sys.stderr, (__name__ + ': ' + func_name + ': ' + 
-                              error_msg)
+        print >> sys.stderr, ('Error: ' + __name__ + ': ' + func_name + 
+                              ': ' + error_msg)
 
             
 
-
     ################### private data attributes ######################
+
 
     # the path to the clinic directory
     _clinic_path = ''

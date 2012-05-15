@@ -10,7 +10,7 @@ import patient
 
 
 
-FM_DEBUG = False
+FM_DEBUG = True
 
 
 # FileManager -
@@ -125,8 +125,10 @@ class FileManager:
                                   'patient_object is not valid')
             return False
 
-        if (not 'id' and 'given_name' and 'family_name' and 'date' 
-            in patient_object.__dict__.keys ()):
+        if (not 'id' in patient_object.__dict__.keys ()
+            or not 'given_name' in patient_object.__dict__.keys ()
+            or not 'family_name' in patient_object.__dict__.keys ()
+            or not 'date' in patient_object.__dict__.keys ()):
             self._file_mgr_error ('save_patient_files',
                                   'patient_object does not contain ' +
                                   'the fields "id", "given_name", ' +
@@ -218,9 +220,10 @@ class FileManager:
 
 
    
+    # Note: This function doesn't work on Windows.
     # set_images_symlink -
     #     Creates a symbolic link to the images directory and places it
-    #     in the specified directory static_images_dir.
+    #     in the specified directory static_images_dir. 
     # Argument:
     #     static_images_dir - a string containing the path to the 
     #         directory where the symlink will be saved. This will 
@@ -235,7 +238,7 @@ class FileManager:
                                   'clinic directory not yet created')
             return False
 
-        if not os.isdir (static_images_dir):
+        if not os.path.isdir (static_images_dir):
             self._file_mgr_error ('create_images_symlink',
                                   static_images_dir + 
                                   ' is not a directory')
@@ -335,6 +338,7 @@ class FileManager:
 
 
 
+    # Note: doesn't work on Windows
     # transfer_clinic_files -
     #     Copies files from this clinic's directory to the target 
     #     directory. This clinic's subdirectories are copied 
@@ -381,28 +385,25 @@ class FileManager:
 
             for filename in filenames:
 
-                if os.path.isfile (target_dirpath + '/' + filename):
-                #    if filecmp.cmp (target_dirpath + '/' + filename,
-                #                    dirpath + '/' + filename):
-                #        continue
-                     if interactive == True:
-                        self._file_mgr_error ('transfer_clinic_files',
-                            'Warning: ' + filename + ' has the same ' +
-                            'name as a file in the target directory. ' +
-                            'The files contents may be identical or ' +
-                            'entirely unrelated')
-                        user_input = raw_input (('Overwrite ' +
-                            dirpath + '/' + filename + '?'))
-                        if user_input == 'y':
-                            shutil.copyfile (dirpath + '/' + filename,
-                                       target_dirpath + '/' + filename)
-                            print "File overwritten"
-                        else:
-                            print "File not overwritten"
+                if (not os.path.isfile (target_dirpath + '/' + filename)
+                    or interactive == False):
+                    shutil.copyfile (dirpath + '/' + filename,
+                                     target_dirpath + '/' + filename)
 
-                    else: # interactive == False 
+                else: # os.path.isfile (target_dirpath + '/' + filename):
+                      # interactive == True:
+                    self._file_mgr_warn ('transfer_clinic_files',
+                        filename + ' has the same name as a file in ' +
+                        'the target directory. The files contents ' +
+                        'may be identical or entirely unrelated')
+                    user_input = raw_input (('Overwrite ' + dirpath + 
+                                             '/' + filename + '?'))
+                    if user_input == 'y':
                         shutil.copyfile (dirpath + '/' + filename,
-                                       target_dirpath + '/' + filename)
+                                        target_dirpath + '/' + filename)
+                        print "File overwritten"
+                    else:
+                        print "File not overwritten"
 
         return True
 
@@ -416,6 +417,12 @@ class FileManager:
     def _file_mgr_error (self, func_name, error_msg):
         print >> sys.stderr, ('Error: ' + __name__ + ': ' + func_name + 
                               ': ' + error_msg)
+
+    # prints out a warning message to stderr of the form:
+    # "class_name: function_name: warning_message"
+    def _file_mgr_warn (self, func_name, warning_msg):
+        print >> sys.stderr, ('Warning: ' + __name__ + ': ' + 
+                              func_name + ': ' + warning_msg)
 
             
 

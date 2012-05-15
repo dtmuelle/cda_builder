@@ -125,8 +125,8 @@ class FileManager:
             in patient_object.__dict__.keys ()):
             self._file_mgr_error ('save_patient_files',
                                   'patient_object does not contain the',
-                                  'fields "id", "given_name", or',
-                                  '"date"')
+                                  'fields "id", "given_name", ',
+                                  '"family_name", or "date"')
             return False
 
         UUID = patient_object.id 
@@ -204,6 +204,36 @@ class FileManager:
 
         return filenames
 
+
+   
+    # set_images_symlink -
+    #     Creates a symbolic link to the images directory and places it
+    #     in the specified directory static_images_dir.
+    # Argument:
+    #     static_images_dir - a string containing the path to the 
+    #         directory where the symlink will be saved. This will 
+    #         probably be the path to '/static/images' 
+    # Returns:
+    #     - False if create_clinic_dir () has not yet been called
+    #     - False if static_images_dir is not a directory
+    def set_images_symlink (self, static_images_dir):
+
+        if self._clinic_path == '':
+            self._file_mgr_error ('create_images_symlink',
+                                  'clinic directory not yet created')
+            return False
+
+        if not os.isdir (static_images_dir):
+            self._file_mgr_error ('create_images_symlink',
+                                  static_images_dir + 
+                                  ' is not a directory')
+            return False
+
+        os.symlink (self._clinic_path + '/patients/images', 
+                    static_images_dir)
+
+        return True
+
         
 
     # get_patient_files -
@@ -240,11 +270,12 @@ class FileManager:
     #     Retrieves all files of a certain type or from a certain visit.
     # Arguments:
     #     file_info - Accepts a list of keyword arguments. If the 
-    #         keyword argument "day='<a_day>'" is given, this function
+    #         keyword argument "day=a_day" is given, this function
     #         will search for all files corresponding to visits during
-    #         the given day.
-    #         If the keyword argument "file_type='<file_type>' is
-    #         given, where <file_type> is one of '.pkl', '.xml', 
+    #         the given day. 
+    #             e.g. day='05'
+    #         If the keyword argument "file_type=file_type" is
+    #         given, where file_type is one of '.pkl', '.xml', 
     #         '.csv', '.fingerprint', or '.img', this function will
     #         search for all files with the given file extension.
     #         If multiple keyword arguments are given, this function

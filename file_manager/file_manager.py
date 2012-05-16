@@ -106,12 +106,18 @@ class FileManager:
     #         'profile_image=file_name' (where file_name is a string 
     #         containg a specified filename) is given, file_name will be
     #         saved as the profile image. If a profile image is already 
-    #         saved, it will be overwritten.
+    #         saved, it will be overwritten. Note that this filename
+    #         doesn't need to also be specified in the "*files" 
+    #         argument.
     # Returns: 
     #     - An array containing the paths of the files that were 
-    #       successfully saved.
+    #       successfully saved. If an error occured that prevented a
+    #       particular file from being saved, it will not be included 
+    #       in this list.
     #     - False if create_clinic_dir () has not yet been called
-    #     - False if an error occurred 
+    #     - False if an patient_object is invalid, if it doesn't have
+    #       the correct attributes, or if the attributes required by
+    #       this function aren't initialized
     def save_patient_files (self, patient_object, *files, 
                             **special_files):
 
@@ -229,6 +235,7 @@ class FileManager:
     #         directory where the symlink will be saved. This will 
     #         probably be the path to '/static/images' 
     # Returns:
+    #     - True for success
     #     - False if create_clinic_dir () has not yet been called
     #     - False if static_images_dir is not a directory
     def set_images_symlink (self, static_images_dir):

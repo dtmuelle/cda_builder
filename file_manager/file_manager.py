@@ -115,20 +115,15 @@ class FileManager:
     #       particular file from being saved, it will not be included 
     #       in this list.
     #     - False if create_clinic_dir () has not yet been called
-    #     - False if an patient_object is invalid, if it doesn't have
-    #       the correct attributes, or if the attributes required by
-    #       this function aren't initialized
+    #     - False if an patient_object doesn't have  the correct 
+    #       attributes, or if the attributes required by this function 
+    #       aren't initialized
     def save_patient_files (self, patient_object, *files, 
                             **special_files):
 
         if self._clinic_path == '':
             self._file_mgr_error ('save_patient_files',
                                   'clinic directory not yet created')
-            return False
-
-        if not isinstance (patient_object, patient.patient):
-            self._file_mgr_error ('save_patient_files',
-                                  'patient_object is not valid')
             return False
 
         if (not 'id' in patient_object.__dict__.keys ()
@@ -138,14 +133,7 @@ class FileManager:
             self._file_mgr_error ('save_patient_files',
                                   'patient_object does not contain ' +
                                   'the fields "id", "given_name", ' +
-                                  '"family_name", or "date"')
-            return False
-
-        if not isinstance (patient_object.date, datetime.datetime):
-            self._file_mgr_error ('save_patient_files',
-                                  str (patient_object) + 
-                                  ': date attribute is not of class ' +
-                                  'datetime')
+                                  '"family_name", and "date"')
             return False
 
         # extract patient info
@@ -304,6 +292,7 @@ class FileManager:
     #         If multiple keyword arguments are given, this function
     #         will return the files which satisfy all of the
     #         specifications.
+    #         Note: The values of the keyword arguments must be strings
     # Returns:
     #     - A list of files which satisfy the specifications given
     #        in file_info
@@ -322,16 +311,26 @@ class FileManager:
 
         if 'day' in file_info.keys ():
             day = file_info['day']
+            if not len (day) == 2:
+                self._file_mgr_error ('get_patient_files2',
+                      'the argument day must be given in the format dd')
+                return False
 
         if 'file_type' in file_info.keys ():
             file_type = file_info['file_type']
-
+            if not file_type in self._file_ext_dict.keys ():
+                self._file_mgr_error ('get_patient_files2',
+                    "file_type must be one of '" + 
+                    "' '".join (self._file_ext_dict.keys ()) + "'")
+                return False
+                                
         # look through all directories for files meeting the specified
         # criteria
         for directory in self._file_ext_dict.values ():
             for filename in os.listdir (self._clinic_path + '/patients'
                                         + directory):
-                if file_type != '' and not file_type in filename:
+                if (file_type != '' and 
+                    not filename.endswith (file_type)):
                     meets_criteria = False
                 if (day != '' and 
                     re.search (r'^[^-]+-(..)|()', filename).group (1) !=

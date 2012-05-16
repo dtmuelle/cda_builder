@@ -44,7 +44,7 @@ class FileManager:
         return self._clinic_path
 
 
-    ######################## Mutators ################################
+    ################## File Management Methods #######################
 
 
     # create_clinic_directory -
@@ -417,7 +417,7 @@ class FileManager:
 
 
 
-    ################# private method attributes ######################
+    ################# Private Method Attributes ######################
 
 
     # prints out an error message to stderr of the form:
@@ -434,7 +434,7 @@ class FileManager:
 
             
 
-    ################### private data attributes ######################
+    ################### Private Data Attributes ######################
 
 
     # the path to the clinic directory

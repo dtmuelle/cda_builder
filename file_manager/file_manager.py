@@ -77,6 +77,7 @@ class FileManager:
             return False
 
         self._clinic_path = clinic_dir
+        self._clinic_name = clinc_name
 
         # make subdirectories
         os.makedirs (self._clinic_path + '/clinic_config')
@@ -216,31 +217,32 @@ class FileManager:
    
     # Note: This function doesn't work on Windows.
     # set_images_symlink -
-    #     Creates a symbolic link to the images directory and places it
-    #     in the specified directory static_images_dir. 
+    #     Creates a symbolic link to the images directory. This can
+    #     be used to create a symbolic link in the '/static/images' 
+    #     directory to all the patient images.
     # Argument:
-    #     static_images_dir - a string containing the path to the 
-    #         directory where the symlink will be saved. This will 
-    #         probably be the path to '/static/images' 
+    #     sym_link_name - the filepath of the new symlink to this 
+    #         clinic's images directory.
+    #         This will probably be the path to 
+    #         '/static/images/<choose_a_filename>' 
     # Returns:
     #     - True for success
     #     - False if create_clinic_dir () has not yet been called
     #     - False if static_images_dir is not a directory
-    def set_images_symlink (self, static_images_dir):
+    def set_images_symlink (self, symlink_name):
 
         if self._clinic_path == '':
             self._file_mgr_error ('create_images_symlink',
                                   'clinic directory not yet created')
             return False
 
-        if not os.path.isdir (static_images_dir):
+        if os.path.isfile (static_images_dir):
             self._file_mgr_error ('create_images_symlink',
-                                  static_images_dir + 
-                                  ' is not a directory')
+                                  symlink_name + ' already exists')
             return False
 
         os.symlink (self._clinic_path + '/patients/images', 
-                    static_images_dir + '/images_sym')
+                    symlink_name)
 
         return True
 
@@ -438,6 +440,10 @@ class FileManager:
 
     # the path to the clinic directory
     _clinic_path = ''
+
+    # the name of the clinic directory specified in the argument to
+    # create_clinic_dir ()
+    _clinic_name = ''
 
     # valid file extensions and their directory names
     _file_ext_dict = {} 

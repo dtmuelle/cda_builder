@@ -1,8 +1,6 @@
 
-Last Update: 5-11-12
+Last Update: 5-15-12
 
-This is a draft of the FileManager class. It is unfinished. There might 
-be bugs.
 
 
 /////////////////////////// Running the code //////////////////////////
@@ -24,30 +22,16 @@ be bugs.
 
 -file_manager.py - the FileManager class
 
--test1.py - run this to build a clinic directory called 'my_clinic'.
-    A single patient's files are saved and then retrieved. A file with an 
-    invalid file extension is saved and a resulting error message is 
-    printed. 
-
--test2.py - builds 2 clinic directories 'my_clinic1' and 'my_clinic2' 
-    each containing different files. All the files in 'my_clinic1' are
-    transferred to 'my_clinic2' and the user is asked whether or not
-    files should be overwritten.
+-test1.py, test2.py, test3.py, test4.py, test5.py - test programs
 
 -tmp.pkl, tmp.img, tmp2.img, tmp.csv, tmp.xml, tmp.docx 
-    These are used by test1.py and test2.py
+    These are used by the test programs
 
 
 
-///////////////////////// Planned Changes /////////////////////////////
-
--transfer_clinic_files () might undergo drastic changes since it's 
- is unclear to me exactly under what conditions directories will get 
- merged.
 
 
-
-///////////////////  Notes on the Current Design //////////////////////
+/////////////////////  Notes on the Design ////////////////////////////
 
 -create_clinic_dir sets up the following directory struture:
     /<root_directory>/<clinic_name>/clinic_config.pkl
@@ -66,26 +50,152 @@ be bugs.
      conflicts
     -if the file is the profile image, the counter field is 'p'
 
--create_clinic_dir (clinic_name, root_dir) sets up the clinic directory
- structure rooted at root_dir
-    -This function must be called before any of the others
-    -The path to the clinic directory is stored in a 'private' variable
-     which all other instance methods use to access the directory
-
--save_patient_files (patient_object, *files, **special_files)
-    -Currently I'm not preventing duplicate files from being saved.
-     All files with the same extension have the same name with a 
-     numerical suffix to prevent conflicts.
-    -Only '.pkl', '.img', '.fingerprint', '.csv', and '.xml' files can be 
-     saved. '.fingerprint' is a placeholder.
     
--transfer_patient_files is probably not working as intended. The current 
-    file naming scheme is to save all files with the same file exetension 
-    under the same name with a counter. The problem occurs when an image
-    file is saved for a particular patient in one clinic directory, and 
-    then image files for that same patient are transferred from another 
-    clinic directory. The first image file will be overwritten by another,
-    perhaps unrelated, image file. 
+
+///////////////////////////// API /////////////////////////////////////
+
+Class FileManager -
+Creates and manages the directory where patient files are stored
+and retrieved. Each FileManager object corresponds to a single 
+directory. 
+
+
+################ Public Method Attributes #######################
+
+
+####################### Accessors ###############################
+
+
+
+get_clinic_dir (self) -
+
+Returns:
+    - the the current clinic's directory.
+    - False if create_clinic_dir () has not yet been called.
+
+
+####################### Mutators ################################
+
+
+
+create_clinic_dir (self, clinic_name, root_dir) -
+
+    Creates the directory structure for a clinic instance
+    with the clinic directory and the patient data directories
+    below it. This will be invoked one time on every workstation 
+    that makes up a clinic. A clinic directory must be set up with
+    this function before any of the other public method attributes
+    can be called.
+Arguments:
+    clinic_name - A string containing the name of the clinic.
+    root_dir - A string containing the name of the directory in 
+        which the new clinic directory will be saved.
+Returns: 
+    - True for success, False for failure
+
+
+
+save_patient_files (self, patient_object, *files, **special_files) -
+
+    Save a patient file(s) to the directory with the appropriate 
+    name (could be pkl, img, xml, csv, or fingerprint file). Files
+    with extentions other than .pkl, .img, .xml, .csv, or 
+    .fingerprint will not be saved. If save_patient_files is 
+    called for files which are already in the clinic directory, a 
+    duplicate will be saved under a different name.
+Arguments:
+    patient_object - a patient object containing the fields 
+        "UUID", "family_name", "given_name", and "date". "UUID", 
+        "family_name", and "given_name" are strings. "date" is of
+        class datetime.datetime.
+    files - 1 or more strings containing the names of files to be
+        saved
+    special_files - If a keyword argument 
+        'profile_image=file_name' (where file_name is a string 
+        containg a specified filename) is given, file_name will be
+        saved as the profile image. If a profile image is already 
+        saved, it will be overwritten.
+Returns: 
+    - An array containing the paths of the files that were 
+      successfully saved.
+    - False if create_clinic_dir () has not yet been called
+    - False if an error occurred 
+
+
+   
+set_images_symlink (self, static_images_dir) -
+
+    Creates a symbolic link to the images directory and places it
+    in the specified directory static_images_dir. 
+Argument:
+    static_images_dir - a string containing the path to the 
+        directory where the symlink will be saved. This will 
+        probably be the path to '/static/images' 
+Returns:
+    - True for success
+    - False if create_clinic_dir () has not yet been called
+    - False if static_images_dir is not a directory
+
+    
+
+get_patient_files (self, UUID) -
+
+    Retrieves all patient files that are connected to the 
+    specified UUID. 
+Argument:
+    UUID - a string containing a UUID
+Returns:
+    - An array containing all files for the patient with the 
+      specified UUID
+    - False if create_clinic_dir () has not yet been called
+
+
+
+get_patient_files2 (self, **file_info) -
+
+    Retrieves all files of a certain type or from a certain visit.
+Arguments:
+    file_info - Accepts a list of keyword arguments. If the 
+        keyword argument "day=a_day" is given, this function
+        will search for all files corresponding to visits during
+        the given day. 
+            e.g. day='05'
+        If the keyword argument "file_type=file_type" is
+        given, where file_type is one of '.pkl', '.xml', 
+        '.csv', '.fingerprint', or '.img', this function will
+        search for all files with the given file extension.
+        If multiple keyword arguments are given, this function
+        will return the files which satisfy all of the
+        specifications.
+Returns:
+    - A list of files which satisfy the specifications given
+       in file_info
+    - False if create_clinic_dir () has not yet been called
+
+
+
+transfer_clinic_files (self, target_directory, interactive=True) -
+
+    Copies files from this clinic's directory to the target 
+    directory. This clinic's subdirectories are copied 
+    recursively. This would be invoked if the exit station needed
+    to be moved from one workstation to another. 
+Arguments:
+    target_directory - a string containing the name of the 
+        directory to which all files should be transferred
+    interactive - if this is set to True, the user is asked 
+        whether or not files in the target directory that have the
+        same name as files in the source directory should be 
+        overwritten. This is set to True by default.
+Returns:
+    - False if create_clinic_dir () has not yet been called or if
+      the target directory does not exist.
+    - True for success
+
+
+
+
+
 
 
 

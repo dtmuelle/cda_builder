@@ -245,7 +245,7 @@ class FileManager:
             return False
 
         os.symlink (self._clinic_path + '/patients/images', 
-                    static_images_dir)
+                    static_images_dir + '/images_sym')
 
         return True
 
@@ -324,7 +324,7 @@ class FileManager:
         for directory in self._file_ext_dict.values ():
             for filename in os.listdir (self._clinic_path + '/patients'
                                         + directory):
-                if file_type != '' and  not file_type in filename:
+                if file_type != '' and not file_type in filename:
                     meets_criteria = False
                 if (day != '' and 
                     re.search (r'^[^-]+-(..)|()', filename).group (1) !=
@@ -396,8 +396,9 @@ class FileManager:
                         filename + ' has the same name as a file in ' +
                         'the target directory. The files contents ' +
                         'may be identical or entirely unrelated')
-                    user_input = raw_input (('Overwrite ' + dirpath + 
-                                             '/' + filename + '?'))
+                    user_input = raw_input (('Overwrite ' + 
+                                             target_dirpath + '/' + 
+                                             filename + '?'))
                     if user_input.startswith ('y'):
                         shutil.copyfile (dirpath + '/' + filename,
                                         target_dirpath + '/' + filename)

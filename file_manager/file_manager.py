@@ -3,11 +3,6 @@ import os
 import shutil
 import sys
 import re
-import datetime
-import filecmp
-
-import patient
-
 
 
 FM_DEBUG = False
@@ -77,7 +72,6 @@ class FileManager:
             return False
 
         self._clinic_path = clinic_dir
-        self._clinic_name = clinc_name
 
         # make subdirectories
         os.makedirs (self._clinic_path + '/clinic_config')
@@ -440,10 +434,6 @@ class FileManager:
 
     # the path to the clinic directory
     _clinic_path = ''
-
-    # the name of the clinic directory specified in the argument to
-    # create_clinic_dir ()
-    _clinic_name = ''
 
     # valid file extensions and their directory names
     _file_ext_dict = {} 

@@ -60,21 +60,12 @@ and retrieved. Each FileManager object corresponds to a single
 directory. 
 
 
-################ Public Method Attributes #######################
-
-
-####################### Accessors ###############################
-
-
 
 get_clinic_dir (self) -
 
 Returns:
     - the the current clinic's directory.
     - False if create_clinic_dir () has not yet been called.
-
-
-####################### Mutators ################################
 
 
 

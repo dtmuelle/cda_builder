@@ -371,8 +371,8 @@ class FileManager:
 
     # Note: doesn't work on Windows
     # transfer_clinic_files -
-    #     Copies patient files from this clinic's directory to the 
-    #     target  directory. This clinic's subdirectories are copied 
+    #     Copies all files from this clinic's directory to the 
+    #     target directory. This clinic's subdirectories are copied 
     #     recursively. This would be invoked if the exit station needed
     #     to be moved from one workstation to another. 
     #     Note: clinic_config.pkl will not be transferred

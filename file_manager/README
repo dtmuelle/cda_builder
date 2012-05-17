@@ -94,6 +94,8 @@ Arguments:
     clinic_name - A string containing the name of the clinic.
     root_dir - A string containing the name of the directory in 
         which the new clinic directory will be saved.
+Returns: 
+    - True for success, False for failure
 
 
 
@@ -192,11 +194,10 @@ Returns:
 transfer_clinic_files (self, target_directory, interactive=True) -
 
 Note: doesn't work on Windows
-    Copies files from this clinic's directory to the target 
+    Copies all files from this clinic's directory to the target 
     directory. This clinic's subdirectories are copied 
     recursively. This would be invoked if the exit station needed
     to be moved from one workstation to another. 
-    Note: clinic_config.pkl will not be transferred
 Arguments:
     target_directory - a string containing the name of the 
         directory to which all files should be transferred

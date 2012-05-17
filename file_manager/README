@@ -38,8 +38,6 @@ Creating a clinic directory:
 
 
 
-
-
 /////////////////////  Notes on the Design ////////////////////////////
 
 -create_clinic_dir sets up the following directory struture:
@@ -99,21 +97,24 @@ Arguments:
 
 
 
-set_images_symlink (self, symlink_name) -
+set_images_symlink (self, static_images_dir, symlink_name) -
    
 Note: This function doesn't work on Windows.
     Creates a symbolic link to the images directory. This can
     be used to create a symbolic link in the '/static/images' 
     directory to all the patient images.
 Argument:
-    sym_link_name - the filepath of the new symlink to this 
+    static_images_dir - the path of the directory where the new
+        symlink will be created. This will probably be the path
+        of the /static/images directory.
+    symlink_name - the filename of the new symlink to this 
         clinic's images directory.
-        This will probably be the path to 
-        '/static/images/<choose_a_filename>' 
 Returns:
     - True for success
     - False if create_clinic_dir () has not yet been called
     - False if static_images_dir is not a directory
+    - False if a file called symlink_name already exists in the
+      static_images_dir directory
 
 
 

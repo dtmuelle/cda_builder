@@ -39,6 +39,20 @@ class FileManager:
         return self._clinic_path
 
 
+
+    # Returns the the current clinic's name.
+    # Returns False if create_clinic_dir () has not yet been called.
+    def get_clinic_name (self):
+
+        if self._clinic_path == '':
+            self._file_mgr_error ('get_clinic_dir',
+                                  'clinic directory not yet created')
+            return False
+
+        return self._clinic_name
+        
+
+
     ################## File Management Methods #######################
 
 
@@ -72,6 +86,7 @@ class FileManager:
             return False
 
         self._clinic_path = clinic_dir
+        self._clinic_name = clinic_name
 
         # make subdirectories
         os.makedirs (self._clinic_path + '/clinic_config')
@@ -230,7 +245,8 @@ class FileManager:
                                   'clinic directory not yet created')
             return False
 
-        if os.path.isfile (static_images_dir):
+        if (os.path.isfile (symlink_name) or
+            os.path.isdir (symlink_name)):
             self._file_mgr_error ('create_images_symlink',
                                   symlink_name + ' already exists')
             return False
@@ -333,7 +349,8 @@ class FileManager:
                     day):
                     meets_criteria = False
                 if meets_criteria:
-                    files.append (filename)
+                    files.append (self._clinic_path + '/patients' + 
+                                  directory + filename)
                 meets_criteria = True
 
         return files
@@ -392,8 +409,8 @@ class FileManager:
                     shutil.copyfile (dirpath + '/' + filename,
                                      target_dirpath + '/' + filename)
 
-                else: # os.path.isfile (target_dirpath + '/' + filename):
-                      # interactive == True:
+                else: # os.path.isfile (target_dirpath + '/' + filename)
+                      # and interactive == True:
                     self._file_mgr_warn ('transfer_clinic_files',
                         filename + ' has the same name as a file in ' +
                         'the target directory. The files contents ' +
@@ -434,6 +451,10 @@ class FileManager:
 
     # the path to the clinic directory
     _clinic_path = ''
+
+    # the name of the clinic specified as a parameter to 
+    # save_clinic_dir ()
+    _clinic_name = ''
 
     # valid file extensions and their directory names
     _file_ext_dict = {} 

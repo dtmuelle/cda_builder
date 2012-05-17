@@ -22,7 +22,7 @@ fm.save_patient_files (p, 'tmp.img', 'tmp.pkl')
 
 today = datetime.datetime.now ().strftime ('%d')
 
-files = fm.get_patient_files2 (day=today,file_type='.pkl')
+files = fm.get_patient_files2 (day=today, file_type='.pkl')
 
 print "files = ", ' '.join (files)
 

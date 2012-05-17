@@ -371,10 +371,11 @@ class FileManager:
 
     # Note: doesn't work on Windows
     # transfer_clinic_files -
-    #     Copies files from this clinic's directory to the target 
-    #     directory. This clinic's subdirectories are copied 
+    #     Copies patient files from this clinic's directory to the 
+    #     target  directory. This clinic's subdirectories are copied 
     #     recursively. This would be invoked if the exit station needed
     #     to be moved from one workstation to another. 
+    #     Note: clinic_config.pkl will not be transferred
     # Arguments:
     #     target_directory - a string containing the name of the 
     #         directory to which all files should be transferred

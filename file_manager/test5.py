@@ -1,4 +1,7 @@
-import file_manager
+
+# creates a clinic, saves a file, transfers files from the first clinic
+# to the second clinic
+
 import file_manager
 import patient
 import datetime

@@ -7,14 +7,14 @@ Last Update: 5-16-12
 
 Note: Several of the functions do not work properly on Windows, for the
       the rest, results are not guaranteed to work as intended
-	  Tested on: Ubuntu 12.04 LTS
+      Tested on: Ubuntu 12.04 LTS
 
 Creating a clinic directory:
 
 1) import file_manager.py. 
 2) instantiate the class.
 3) setup the directory structure with 
-	 create_clinic_dir ('clinic_name', '.')
+     create_clinic_dir ('clinic_name', '.')
    Use '.' to create the clinic directory in the current directory.
 4) now you can call any of the other FileManager functions
 
@@ -196,6 +196,7 @@ Note: doesn't work on Windows
     directory. This clinic's subdirectories are copied 
     recursively. This would be invoked if the exit station needed
     to be moved from one workstation to another. 
+    Note: clinic_config.pkl will not be transferred
 Arguments:
     target_directory - a string containing the name of the 
         directory to which all files should be transferred

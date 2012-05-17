@@ -1,4 +1,7 @@
 
+# saves patient files and then creates a symbolic link the images 
+# directory and places it in '../static/images/'
+
 import file_manager
 import patient
 import datetime
@@ -42,8 +45,10 @@ print "\n"
 fm.save_patient_files (p1, 'tmp.pkl', 
                        profile_image='tmp.img')
 
-print ("calling fm.set_images_symlink ('./static/images')")
-fm.set_images_symlink ('./static/images')
+print ("calling fm.set_images_symlink ('../static/images', " +
+       "fm.get_clinic_name + '_images_sym')")
+fm.set_images_symlink ('../static/images/', 
+                       fm.get_clinic_name () + '_images_sym')
 
 
 

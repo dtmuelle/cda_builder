@@ -89,10 +89,12 @@ class FileManager:
         self._clinic_name = clinic_name
 
         # make subdirectories
-        os.makedirs (self._clinic_path + '/clinic_config')
         os.makedirs (self._clinic_path + '/patients')
         for directory in self._file_ext_dict.values ():
             os.makedirs (self._clinic_path + '/patients' + directory)
+
+        f = open (self._clinic_path + '/clinic_config.pkl', 'w')
+        f.close ()
 
         return True
 
@@ -104,29 +106,39 @@ class FileManager:
     #     be used to create a symbolic link in the '/static/images' 
     #     directory to all the patient images.
     # Argument:
-    #     sym_link_name - the filepath of the new symlink to this 
+    #     static_images_dir - the path of the directory where the new
+    #         symlink will be created. This will probably be the path
+    #         of the /static/images directory.
+    #     symlink_name - the filename of the new symlink to this 
     #         clinic's images directory.
-    #         This will probably be the path to 
-    #         '/static/images/<choose_a_filename>' 
     # Returns:
     #     - True for success
     #     - False if create_clinic_dir () has not yet been called
     #     - False if static_images_dir is not a directory
-    def set_images_symlink (self, symlink_name):
+    #     - False if a file called symlink_name already exists in the
+    #       static_images_dir directory
+    def set_images_symlink (self, static_images_dir, symlink_name):
 
         if self._clinic_path == '':
             self._file_mgr_error ('create_images_symlink',
                                   'clinic directory not yet created')
             return False
 
-        if (os.path.isfile (symlink_name) or
-            os.path.isdir (symlink_name)):
+        if not os.path.isdir (static_images_dir):
             self._file_mgr_error ('create_images_symlink',
+                                  static_images_dir + 
+                                  ' is not a directory')
+            return False
+
+        if (os.path.isfile (static_images_dir + '/' + symlink_name) or
+            os.path.isdir (static_images_dir + '/' + symlink_name)):
+            self._file_mgr_error ('create_images_symlink',
+                                  static_images_dir + '/' + 
                                   symlink_name + ' already exists')
             return False
 
         os.symlink (self._clinic_path + '/patients/images', 
-                    symlink_name)
+                    static_images_dir + '/' + symlink_name)
 
         return True
 

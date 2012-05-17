@@ -98,6 +98,40 @@ class FileManager:
 
 
 
+    # Note: This function doesn't work on Windows.
+    # set_images_symlink -
+    #     Creates a symbolic link to the images directory. This can
+    #     be used to create a symbolic link in the '/static/images' 
+    #     directory to all the patient images.
+    # Argument:
+    #     sym_link_name - the filepath of the new symlink to this 
+    #         clinic's images directory.
+    #         This will probably be the path to 
+    #         '/static/images/<choose_a_filename>' 
+    # Returns:
+    #     - True for success
+    #     - False if create_clinic_dir () has not yet been called
+    #     - False if static_images_dir is not a directory
+    def set_images_symlink (self, symlink_name):
+
+        if self._clinic_path == '':
+            self._file_mgr_error ('create_images_symlink',
+                                  'clinic directory not yet created')
+            return False
+
+        if (os.path.isfile (symlink_name) or
+            os.path.isdir (symlink_name)):
+            self._file_mgr_error ('create_images_symlink',
+                                  symlink_name + ' already exists')
+            return False
+
+        os.symlink (self._clinic_path + '/patients/images', 
+                    symlink_name)
+
+        return True
+
+        
+
     # save_patient_files -
     #     Save a patient file(s) to the directory with the appropriate 
     #     name (could be pkl, img, xml, csv, or fingerprint file). Files
@@ -224,40 +258,6 @@ class FileManager:
 
 
    
-    # Note: This function doesn't work on Windows.
-    # set_images_symlink -
-    #     Creates a symbolic link to the images directory. This can
-    #     be used to create a symbolic link in the '/static/images' 
-    #     directory to all the patient images.
-    # Argument:
-    #     sym_link_name - the filepath of the new symlink to this 
-    #         clinic's images directory.
-    #         This will probably be the path to 
-    #         '/static/images/<choose_a_filename>' 
-    # Returns:
-    #     - True for success
-    #     - False if create_clinic_dir () has not yet been called
-    #     - False if static_images_dir is not a directory
-    def set_images_symlink (self, symlink_name):
-
-        if self._clinic_path == '':
-            self._file_mgr_error ('create_images_symlink',
-                                  'clinic directory not yet created')
-            return False
-
-        if (os.path.isfile (symlink_name) or
-            os.path.isdir (symlink_name)):
-            self._file_mgr_error ('create_images_symlink',
-                                  symlink_name + ' already exists')
-            return False
-
-        os.symlink (self._clinic_path + '/patients/images', 
-                    symlink_name)
-
-        return True
-
-        
-
     # get_patient_files -
     #     Retrieves all patient files that are connected to the 
     #     specified UUID. 

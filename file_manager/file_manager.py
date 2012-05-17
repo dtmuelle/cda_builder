@@ -27,7 +27,7 @@ class FileManager:
     ######################## Accessors ###############################
 
 
-    # Returns the the current clinic's directory.
+    # Returns the the full path of the current clinic's directory.
     # Returns False if create_clinic_dir () has not yet been called.
     def get_clinic_dir (self):
 
